@@ -121,7 +121,7 @@ merged_df = pd.merge(hygiene_df, metadata_df, on='country', how='left')
 
 
 # Check merged data
-merged_df.head()
+merged_df.head();
 ```
 # Global Hygiene Coverage Map
 
