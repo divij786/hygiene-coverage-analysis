@@ -8,7 +8,6 @@ format:
     toc-depth: 2
     theme: cosmo
     page-layout: full
-    css: styles.css # optional, only if you have a custom CSS
 output-file: index.html
 editor: visual
 ---
@@ -16,6 +15,8 @@ editor: visual
 
 **Name**: Divij Singh Bankal  
 **ID**: A15463
+
+---
 # Introduction
 
 Hygiene coverage in healthcare facilities is a critical component of public health infrastructure, directly influencing patient outcomes, infection control, and broader community health. Despite its importance, significant disparities persist across countries, shaped by a complex interplay of economic, demographic, and healthcare-related factors.  
@@ -113,25 +114,6 @@ hygiene_df = hygiene_df.rename(columns={
 })
 
 ```
-# Dataset Overview After Merging
-
-Following the merging of hygiene coverage data and country metadata, we obtained a comprehensive dataset where each record corresponds to a specific country and year.  
-
-In the sample above, the country of **Andorra** is shown across multiple years. Hygiene coverage in healthcare facilities remains consistently at **100%** throughout the recorded years, indicating complete access to basic hygiene services across all surveyed healthcare facilities.
-
-The merged dataset contains the following key fields:
-- **country**: Name of the country
-- **iso_alpha**: ISO country code (3-letter)
-- **year_x**: Year associated with hygiene coverage data
-- **hygiene_coverage**: Proportion of healthcare facilities with basic hygiene
-- **year_y**: Year associated with the socioeconomic data
-- **population, total**: Total national population
-- **gdp per capita (constant 2015 US$)**: Economic prosperity indicator (may contain missing values)
-- **gni (current US$)**: Gross National Income, though often missing (NaN) for earlier years
-
-It is important to note that the dataset contains for key economic indicators like GDP per capita and GNI, especially for earlier years. This may require additional data cleaning, imputation, or cautious interpretation when conducting further analysis.
-
-Overall, the merged dataset sets a strong foundation for analyzing how hygiene standards are associated with broader health and economic outcomes across countries and over time.
 
 ```{python}
 # Merge hygiene data with metadata
@@ -247,10 +229,10 @@ fig.show()
 ```
 # Life Expectancy and Hygiene Coverage
 
-Finally, we explore the relationship between **Life Expectancy** and **Hygiene Coverage**.  
-Life expectancy is a strong overall indicator of health outcomes in a country. By plotting it against hygiene coverage, we can assess whether countries with better healthcare hygiene standards also experience longer average lifespans.
-
-This bubble chart, where bubble size represents population, highlights how improvements in healthcare infrastructure, particularly hygiene, may correlate with broader health benefits at the population level.
+Finally, we explore the relationship between Life Expectancy and Hygiene Coverage. Life expectancy is a strong overall indicator of health outcomes in a country. By plotting it against hygiene coverage, we can assess whether countries with better healthcare hygiene standards also experience longer average lifespans.
+This time series chart tracks how hygiene coverage has evolved over time for various countries. The chart highlights trends, where bubble size represents population, showing how improvements in healthcare infrastructure, particularly hygiene, may correlate with broader health benefits at the population level.
+Notably, Egypt stands out as a country with significant progress in hygiene coverage over the years, reflecting improvements in healthcare standards. On the other hand, Tajikistan did not show any improvement, maintaining a constant level of hygiene coverage. Additionally, Nigeria experienced a degradation in its hygiene coverage percentage, highlighting challenges in maintaining or improving healthcare hygiene despite other factors.
+This analysis underscores the dynamic nature of healthcare systems and the importance of continuous improvement in hygiene standards to ensure better public health outcomes.
 
 ```{python}
 # Filter countries that have hygiene coverage data across multiple years
@@ -286,3 +268,7 @@ fig = px.line(
 fig.update_layout(template="plotly_white")
 fig.show()
 ```
+
+# Conclusion
+
+In conclusion, the analysis revealed important insights into the relationship between hygiene coverage, economic prosperity, and health outcomes. We observed that countries with higher GDP tend to have better hygiene standards in healthcare facilities, which in turn correlates with higher life expectancy. However, there were notable exceptions, such as Nigeria, where hygiene coverage decreased over time. Additionally, Egypt showed significant improvements in hygiene coverage, highlighting the importance of continuous efforts in healthcare infrastructure. Countries like Tajikistan, which did not show any improvement, indicate the need for targeted interventions and policies to enhance hygiene standards in healthcare facilities. Overall, the findings emphasize the critical role of hygiene in promoting public health and the need for sustained investments to improve healthcare systems globally.
