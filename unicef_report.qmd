@@ -13,6 +13,9 @@ output-file: index.html
 editor: visual
 ---
 
+
+**Name**: Divij Singh Bankal  
+**ID**: A15463
 # Introduction
 
 Hygiene coverage in healthcare facilities is a critical component of public health infrastructure, directly influencing patient outcomes, infection control, and broader community health. Despite its importance, significant disparities persist across countries, shaped by a complex interplay of economic, demographic, and healthcare-related factors.  
@@ -97,30 +100,11 @@ fig = px.scatter(
 )
 
 fig.show()
-
 ```
-# Initial Hygiene Dataset Overview
 
-Before merging, we first extracted a clean subset containing only hygiene coverage information.  
-Each record in this dataset includes:
-- **country**: Name of the country
-- **iso_alpha**: ISO country code
-- **year**: Year of observation
-- **hygiene_coverage**: Proportion of healthcare facilities meeting basic hygiene standards
-
-This initial dataset forms the basis for understanding hygiene conditions over time across countries.  
-Subsequent merging with socioeconomic data adds broader context to the analysis.
-
----
 
 
 ```{python}
-# Keep only the needed columns
-hygiene_df = indicator_df[['country', 'alpha_3_code', 'time_period', 'obs_value']]
-
-# Drop missing values
-hygiene_df = hygiene_df.dropna()
-
 # Rename columns for easier handling
 hygiene_df = hygiene_df.rename(columns={
     'alpha_3_code': 'iso_alpha',
@@ -128,11 +112,7 @@ hygiene_df = hygiene_df.rename(columns={
     'obs_value': 'hygiene_coverage'
 })
 
-
-# Check cleaned data
-hygiene_df.head()
 ```
-
 # Dataset Overview After Merging
 
 Following the merging of hygiene coverage data and country metadata, we obtained a comprehensive dataset where each record corresponds to a specific country and year.  
@@ -149,7 +129,7 @@ The merged dataset contains the following key fields:
 - **gdp per capita (constant 2015 US$)**: Economic prosperity indicator (may contain missing values)
 - **gni (current US$)**: Gross National Income, though often missing (NaN) for earlier years
 
-It is important to note that the dataset contains **some missing values** for key economic indicators like GDP per capita and GNI, especially for earlier years. This may require additional data cleaning, imputation, or cautious interpretation when conducting further analysis.
+It is important to note that the dataset contains for key economic indicators like GDP per capita and GNI, especially for earlier years. This may require additional data cleaning, imputation, or cautious interpretation when conducting further analysis.
 
 Overall, the merged dataset sets a strong foundation for analyzing how hygiene standards are associated with broader health and economic outcomes across countries and over time.
 
@@ -216,7 +196,6 @@ fig = px.scatter(
 
 fig.update_layout(template="plotly_white")
 fig.show()
-
 ```
 # Relationship Between Population and Hygiene Coverage
 
@@ -306,6 +285,4 @@ fig = px.line(
 
 fig.update_layout(template="plotly_white")
 fig.show()
-
-
 ```
