@@ -9,6 +9,7 @@ format:
     theme: cosmo
     page-layout: full
     css: styles.css # optional, only if you have a custom CSS
+output-file: index.html
 editor: visual
 ---
 
