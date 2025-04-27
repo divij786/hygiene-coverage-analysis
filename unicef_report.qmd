@@ -1,0 +1,310 @@
+---
+title: "How Economic, Demographic, and Health Factors Influence Hygiene Coverage in Healthcare Facilities"
+format: 
+  html:
+    embed-resources: true
+    code-fold: true
+    toc: true
+    toc-depth: 2
+    theme: cosmo
+    page-layout: full
+    css: styles.css # optional, only if you have a custom CSS
+editor: visual
+---
+
+# Introduction
+
+Hygiene coverage in healthcare facilities is a critical component of public health infrastructure, directly influencing patient outcomes, infection control, and broader community health. Despite its importance, significant disparities persist across countries, shaped by a complex interplay of economic, demographic, and healthcare-related factors.  
+
+In this report, we systematically explore how indicators such as **GDP per capita**, **population size**, and **life expectancy** correlate with hygiene coverage across healthcare facilities globally. We aim to uncover patterns and potential leverage points for targeted public health interventions and investments.
+
+# Data Sources
+
+Our analysis is based on two primary datasets obtained from **UNICEF**:
+- **unicef_indicator_1.csv**: This dataset provides country-level data on hygiene coverage, representing the proportion of healthcare facilities with access to basic hygiene services.
+- **unicef_metadata.csv**: This dataset contains country metadata, including important socioeconomic indicators such as GDP per capita (constant 2015 US$), total population, and life expectancy at birth.
+
+These datasets were merged on the country level, ensuring a comprehensive and cohesive framework for our analysis.
+
+# Hygiene Observations vs Life Expectancy (Bubble Plot)
+
+One of the key visualizations we created is a **bubble scatter plot**, designed to intuitively reveal relationships between hygiene coverage, economic factors, and health outcomes:
+- The **x-axis** represents the **proportion of healthcare facilities with basic hygiene services** ("Hygiene Observation Value").
+- The **y-axis** represents the **life expectancy at birth** in years.
+- The **size** of each bubble corresponds to the **total population** of each country, giving a sense of scale.
+- The **color** of each bubble reflects the country's **GDP per capita**, with higher GDP shown in lighter shades.
+
+This visualization highlights important global trends:
+- In general, countries with higher hygiene coverage tend to have higher life expectancy.
+- Larger populations often face more varied outcomes, indicating the influence of other systemic factors.
+- Economic prosperity (GDP per capita) often correlates with better hygiene and higher life expectancy, but with notable exceptions.
+
+This initial plot sets the foundation for deeper exploration into how hygiene, health, and economic indicators intersect across different nations.
+
+```{python}
+import pandas as pd
+import plotly.express as px
+
+# Load datasets
+indicator_df = pd.read_csv('unicef_indicator_1.csv')
+metadata_df = pd.read_csv('unicef_metadata.csv')
+
+# Make column names lowercase for consistency
+indicator_df.columns = indicator_df.columns.str.lower()
+metadata_df.columns = metadata_df.columns.str.lower()
+
+# Keep only needed columns from indicator
+hygiene_df = indicator_df[['country', 'alpha_3_code', 'time_period', 'obs_value']]
+
+# Drop missing values
+hygiene_df = hygiene_df.dropna()
+
+# Merge hygiene data with metadata on 'country'
+merged_df = pd.merge(hygiene_df, metadata_df, on='country', how='left')
+
+# Ensure 'time_period' is integer
+merged_df['time_period'] = merged_df['time_period'].astype(int)
+
+# Keep only the latest year per country
+latest_year_df = merged_df.loc[merged_df.groupby('country')['time_period'].idxmax()]
+
+# Drop rows where important columns are missing
+latest_year_df = latest_year_df.dropna(subset=[
+    'population, total',
+    'gdp per capita (constant 2015 us$)',
+    'life expectancy at birth, total (years)',
+    'obs_value'
+])
+
+# Plot scatter: Hygiene observations vs Life Expectancy
+fig = px.scatter(
+    latest_year_df,
+    x='obs_value',
+    y='life expectancy at birth, total (years)',
+    hover_name='country',
+    color='gdp per capita (constant 2015 us$)',
+    size='population, total',
+    title='Hygiene Observations vs Life Expectancy',
+    labels={
+        'obs_value': 'Hygiene Observation Value',
+        'life expectancy at birth, total (years)': 'Life Expectancy (Years)',
+        'gdp per capita (constant 2015 us$)': 'GDP per Capita (2015 US$)',
+        'population, total': 'Population'
+    },
+    size_max=60,
+    template='plotly_white'
+)
+
+fig.show()
+
+```
+# Initial Hygiene Dataset Overview
+
+Before merging, we first extracted a clean subset containing only hygiene coverage information.  
+Each record in this dataset includes:
+- **country**: Name of the country
+- **iso_alpha**: ISO country code
+- **year**: Year of observation
+- **hygiene_coverage**: Proportion of healthcare facilities meeting basic hygiene standards
+
+This initial dataset forms the basis for understanding hygiene conditions over time across countries.  
+Subsequent merging with socioeconomic data adds broader context to the analysis.
+
+---
+
+
+```{python}
+# Keep only the needed columns
+hygiene_df = indicator_df[['country', 'alpha_3_code', 'time_period', 'obs_value']]
+
+# Drop missing values
+hygiene_df = hygiene_df.dropna()
+
+# Rename columns for easier handling
+hygiene_df = hygiene_df.rename(columns={
+    'alpha_3_code': 'iso_alpha',
+    'time_period': 'year',
+    'obs_value': 'hygiene_coverage'
+})
+
+
+# Check cleaned data
+hygiene_df.head()
+```
+
+# Dataset Overview After Merging
+
+Following the merging of hygiene coverage data and country metadata, we obtained a comprehensive dataset where each record corresponds to a specific country and year.  
+
+In the sample above, the country of **Andorra** is shown across multiple years. Hygiene coverage in healthcare facilities remains consistently at **100%** throughout the recorded years, indicating complete access to basic hygiene services across all surveyed healthcare facilities.
+
+The merged dataset contains the following key fields:
+- **country**: Name of the country
+- **iso_alpha**: ISO country code (3-letter)
+- **year_x**: Year associated with hygiene coverage data
+- **hygiene_coverage**: Proportion of healthcare facilities with basic hygiene
+- **year_y**: Year associated with the socioeconomic data
+- **population, total**: Total national population
+- **gdp per capita (constant 2015 US$)**: Economic prosperity indicator (may contain missing values)
+- **gni (current US$)**: Gross National Income, though often missing (NaN) for earlier years
+
+It is important to note that the dataset contains **some missing values** for key economic indicators like GDP per capita and GNI, especially for earlier years. This may require additional data cleaning, imputation, or cautious interpretation when conducting further analysis.
+
+Overall, the merged dataset sets a strong foundation for analyzing how hygiene standards are associated with broader health and economic outcomes across countries and over time.
+
+```{python}
+# Merge hygiene data with metadata
+merged_df = pd.merge(hygiene_df, metadata_df, on='country', how='left')
+
+
+# Check merged data
+merged_df.head()
+```
+# Global Hygiene Coverage Map
+
+To visualize the geographical distribution of hygiene standards, we generated a world map highlighting the hygiene coverage in healthcare facilities for each country. 
+
+This map uses color intensity to represent the proportion of healthcare facilities meeting basic hygiene requirements:  
+- **Darker shades** indicate higher hygiene coverage (closer to 100%).  
+- **Lighter shades** indicate lower hygiene coverage, signaling areas where access to basic hygiene services may need attention.
+
+By mapping the data globally, we can easily spot regional patterns, identify countries excelling in healthcare hygiene, and recognize those that might require more policy focus or investment. This spatial representation provides an intuitive and impactful overview, complementing the numerical analysis.
+
+The map serves as a crucial starting point for deeper exploration into the factors influencing hygiene coverage across different regions.
+
+```{python}
+# Create a choropleth map
+fig = px.choropleth(
+    hygiene_df,
+    locations="iso_alpha",
+    color="hygiene_coverage",
+    hover_name="country",
+    color_continuous_scale="Greens",
+    labels={'hygiene_coverage': 'Hygiene Coverage (%)'},
+    title="Proportion of Health Care Facilities with Basic Hygiene Services"
+)
+
+fig.update_layout(geo=dict(showframe=False, showcoastlines=False))
+fig.show()
+```
+# Relationship Between GDP per Capita and Hygiene Coverage
+
+To explore the association between economic prosperity and healthcare facility hygiene, we created a bubble plot showing **GDP per capita** (constant 2015 US$) on the x-axis and **hygiene coverage** on the y-axis.  
+Each bubble represents a country, and the **size** of the bubble reflects the total national population.
+
+This visualization helps us understand whether wealthier countries tend to have better hygiene coverage in healthcare facilities, while also considering population differences.  
+It also highlights countries that may have high hygiene standards despite lower economic resources, and vice versa.
+
+```{python}
+# Keep the latest record per country based on year_x
+latest_data = merged_df.sort_values('year_x').groupby('country').tail(1)
+
+# Scatter plot with one point per country
+fig = px.scatter(
+    latest_data,
+    x="gdp per capita (constant 2015 us$)",
+    y="hygiene_coverage",
+    hover_name="country",
+    trendline="ols",
+    labels={
+        "gdp per capita (constant 2015 us$)": "GDP per Capita",
+        "hygiene_coverage": "Hygiene Coverage (%)"
+    },
+    title="GDP per Capita vs Hygiene Coverage (One point per Country)"
+)
+
+fig.update_layout(template="plotly_white")
+fig.show()
+
+```
+# Relationship Between Population and Hygiene Coverage
+
+To further investigate factors influencing hygiene standards, we plotted **Population** (total number of people) against **Hygiene Coverage**.  
+This plot helps reveal whether countries with larger populations face greater challenges in maintaining high hygiene standards in healthcare facilities.
+
+By analyzing this relationship, we can identify if smaller or larger countries tend to achieve better hygiene coverage, and spot any notable outliers that may warrant further exploration.
+
+```{python}
+import plotly.graph_objects as go
+
+# Use latest available year (already extracted)
+latest_year_df = merged_df.loc[merged_df.groupby('country')['year_x'].idxmax()]
+
+# Sort by population and pick top 30
+top30_df = latest_year_df.sort_values('population, total', ascending=False).head(30)
+
+fig = go.Figure()
+
+# Bar for Population
+fig.add_trace(go.Bar(
+    x=top30_df['country'],
+    y=top30_df['population, total'],
+    name='Population',
+    yaxis='y1'
+))
+
+# Line for Hygiene Coverage
+fig.add_trace(go.Scatter(
+    x=top30_df['country'],
+    y=top30_df['hygiene_coverage'],
+    name='Hygiene Coverage (%)',
+    yaxis='y2',
+    mode='lines+markers'
+))
+
+# Layout settings
+fig.update_layout(
+    title="Population and Hygiene Coverage (Top 30 Countries)",
+    xaxis=dict(title="Country"),
+    yaxis=dict(title="Population", side="left"),
+    yaxis2=dict(title="Hygiene Coverage (%)", overlaying="y", side="right"),
+    legend=dict(x=0.5, y=1.1, orientation="h"),
+    template="plotly_white",
+    height=600
+)
+
+fig.show()
+```
+# Life Expectancy and Hygiene Coverage
+
+Finally, we explore the relationship between **Life Expectancy** and **Hygiene Coverage**.  
+Life expectancy is a strong overall indicator of health outcomes in a country. By plotting it against hygiene coverage, we can assess whether countries with better healthcare hygiene standards also experience longer average lifespans.
+
+This bubble chart, where bubble size represents population, highlights how improvements in healthcare infrastructure, particularly hygiene, may correlate with broader health benefits at the population level.
+
+```{python}
+# Filter countries that have hygiene coverage data across multiple years
+valid_countries = (
+    merged_df.dropna(subset=["hygiene_coverage"])
+    .groupby('country')
+    .filter(lambda x: x['year_x'].nunique() > 3)  # countries with more than 3 years of data
+    ["country"]
+    .unique()
+)
+
+# Filter dataset for those valid countries
+time_series_df = merged_df[merged_df["country"].isin(valid_countries)]
+
+# Sort for clean lines
+time_series_df = time_series_df.sort_values(["country", "year_x"])
+
+# Line plot
+fig = px.line(
+    time_series_df,
+    x="year_x",
+    y="hygiene_coverage",
+    color="country",
+    markers=True,
+    labels={
+        "year_x": "Year",
+        "hygiene_coverage": "Hygiene Coverage (%)",
+        "country": "Country"
+    },
+    title="Hygiene Coverage Over Time (Countries with Sufficient Data)"
+)
+
+fig.update_layout(template="plotly_white")
+fig.show()
+
+
+```
