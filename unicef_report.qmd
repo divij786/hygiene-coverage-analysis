@@ -230,7 +230,7 @@ fig.show()
 # Life Expectancy and Hygiene Coverage
 
 Finally, we explore the relationship between Life Expectancy and Hygiene Coverage. Life expectancy is a strong overall indicator of health outcomes in a country. By plotting it against hygiene coverage, we can assess whether countries with better healthcare hygiene standards also experience longer average lifespans.
-This time series chart tracks how hygiene coverage has evolved over time for various countries. The chart highlights trends, where bubble represents population in a particular year, showing how improvements in healthcare infrastructure, particularly hygiene, may correlate with broader health benefits at the population level.
+This time series chart tracks how hygiene coverage has evolved over time for various countries. The chart highlights trends, where bubble represents hygiene coverage, showing how improvements in healthcare infrastructure, particularly hygiene, may correlate with broader health benefits at the population level.
 Notably, Egypt stands out as a country with significant progress in hygiene coverage over the years, reflecting improvements in healthcare standards. On the other hand, Tajikistan did not show any improvement, maintaining a constant level of hygiene coverage. Additionally, Nigeria experienced a degradation in its hygiene coverage percentage, highlighting challenges in maintaining or improving healthcare hygiene despite other factors.
 This analysis underscores the dynamic nature of healthcare systems and the importance of continuous improvement in hygiene standards to ensure better public health outcomes.
 
